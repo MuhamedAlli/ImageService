@@ -16,30 +16,24 @@ class ImageService
     }
     public function uploadImage(UploadedFile $image, $userId)
     {
-        // Create filename
         $filenameWithExt = $image->getClientOriginalName();
         $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
         $extension = $image->getClientOriginalExtension();
         $filenameToStore = $filename . '_' . time() . '.' . $extension;
 
-        // Define custom upload directory in the public folder
         $uploadPath = public_path('images/users');
 
-        // Create directory if it doesn't exist
         if (!file_exists($uploadPath)) {
             mkdir($uploadPath, 0755, true);
         }
 
-        // Move the uploaded file to our custom directory
         $image->move($uploadPath, $filenameToStore);
 
-        // Prepare image metadata
         $imageData = [
             'img_name' => $filenameToStore,
             'user_id' => $userId
         ];
 
-        // Save to database
         $image = $this->imageRepository->store($imageData);
 
         return $image;
